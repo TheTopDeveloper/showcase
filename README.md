@@ -33,7 +33,7 @@ At 11.30am ET, you should have pushed your code to your own GitHub and sent the 
 ## How will this be evaluated
 
 - Data Science - to what extent do you understand the problem, experiment with solutions, and evaluate outcomes  
-- AI Engineering - your expertise in selecting, applying and deploying LLMS for commercial purposes  
+- AI Engineering - your expertise in selecting, applying and deploying LLMs for commercial purposes  
 - Structured problem solving and communication - also meeting your deadlines..
 
 ### NOTE - what's not important

@@ -1,15 +1,6 @@
 {
     "name": "Event",
     "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
-    "secrets": {
-        "OPENAI_API_KEY": {
-            "description": "Your OpenAI API key",
-            "documentationUrl": "https://platform.openai.com/api-keys"
-        },
-        "ALLIANCE_MCP_SERVER": {
-            "description": "The URL of the Running Alliance MCP Server"
-        }
-    },
     "customizations": {
         "vscode": {
             "settings": {
