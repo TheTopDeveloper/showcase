@@ -1,0 +1,16 @@
+issue_id,category,issue_title,resolution,avg_resolution_time_hours,frequency_rank
+ISS001,Login,Cannot login - password not working,Reset password via Forgot Password link. Check spam folder for reset email. Clear browser cache if issues persist.,0.5,1
+ISS002,Login,Two-factor authentication code not accepted,Ensure device time is synced. Try backup codes. Contact support to reset 2FA if locked out.,1,5
+ISS003,Billing,Charge appeared twice on statement,Automatic refund processed within 5-10 business days. Usually a temporary authorization hold.,24,8
+ISS004,Billing,How to update credit card,Settings > Billing > Payment Methods > Update Card. Old card removed after new one verified.,0.25,3
+ISS005,Billing,Cancel subscription,Settings > Billing > Cancel Subscription. Access continues until end of billing period. Data retained 30 days.,0.5,4
+ISS006,Integration,Slack integration not syncing,Disconnect and reconnect integration. Ensure correct Slack workspace selected. Check Slack permissions.,2,6
+ISS007,Integration,Google Calendar not showing tasks,Verify calendar sync is enabled in Settings > Integrations. Check Google account permissions. Re-authenticate if needed.,1.5,9
+ISS008,Performance,Mobile app slow or crashing,Update to latest app version. Clear app cache. Restart device. Reinstall app if issues persist.,0.5,2
+ISS009,Performance,Slow loading times in browser,Clear browser cache. Try incognito mode. Disable browser extensions. Try different browser.,1,7
+ISS010,Features,Cannot create custom fields,Custom fields available on Professional plan and above. Upgrade required for Starter/Free plans.,0.25,10
+ISS011,Features,Time tracking not visible,Time tracking available on Business plan and above. Check Settings > Features to enable if on eligible plan.,0.25,11
+ISS012,Data,Accidentally deleted project,Check Trash in Settings. Projects recoverable for 30 days. Permanent deletion after 30 days.,0.5,12
+ISS013,Data,Need to export all project data,Settings > Export Data. Available in CSV format for all plans. PDF reports for Professional+.,1,13
+ISS014,Access,Team member cannot see project,Check project permissions. Ensure user is invited to specific project. Verify user role allows access.,0.5,14
+ISS015,Access,Cannot invite new team members,Check plan user limits. Upgrade plan or remove inactive users to add new members.,0.5,15

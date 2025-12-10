@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 15, 23, 42;
+  --background-rgb: 248, 250, 252;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+.chat-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message-enter {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+.typing-dot {
+  animation: typingBounce 1.4s infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+.prose-chat { @apply text-slate-700; }
+.prose-chat p { @apply mb-2 last:mb-0; }
+.prose-chat ul { @apply list-disc list-inside mb-2 space-y-1; }
+.prose-chat ol { @apply list-decimal list-inside mb-2 space-y-1; }
+.prose-chat strong { @apply font-semibold text-slate-900; }
+.prose-chat code { @apply bg-slate-100 px-1.5 py-0.5 rounded text-sm font-mono; }
+.prose-chat pre { @apply bg-slate-800 text-slate-100 p-3 rounded-lg overflow-x-auto mb-2; }
+.prose-chat pre code { @apply bg-transparent p-0; }
+.prose-chat a { @apply text-primary-600 hover:text-primary-700 underline; }
