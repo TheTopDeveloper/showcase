@@ -1,7 +1,7 @@
 """
 Configuration for Customer Support Agent
 ========================================
-UPDATE THIS FILE when swapping in actual company data.
+Configuration for MCP-based customer support chatbot.
 """
 
 import os
@@ -11,60 +11,57 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # =============================================================================
-# DATA CONFIGURATION - UPDATE THIS SECTION TO SWAP DATA
+# MCP SERVER CONFIGURATION
 # =============================================================================
 
-# Base directories (Windows/Linux compatible)
-BASE_DIR = Path(__file__).resolve().parent.parent  # backend/
-PROJECT_ROOT = BASE_DIR.parent  # showcase-prep/
-DATA_DIR = PROJECT_ROOT / "data"
-
-# Ensure data directory exists
-DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-# Unstructured documents for RAG (markdown, txt, pdf)
-# UPDATE THESE PATHS when you receive actual data
-UNSTRUCTURED_DOCS = [
-    DATA_DIR / "company_overview.md",
-    DATA_DIR / "faqs.md",
-    DATA_DIR / "policies.md",
-    # Add more documents here:
-    # DATA_DIR / "actual_guide.pdf",
-]
-
-# Structured data files (CSV) for tool-based lookups
-# UPDATE THESE PATHS when you receive actual data
-STRUCTURED_DATA = {
-    "pricing": DATA_DIR / "pricing.csv",
-    "features": DATA_DIR / "features.csv",
-    "support_issues": DATA_DIR / "support_issues.csv",
-    # Add more structured data:
-    # "products": DATA_DIR / "products.csv",
-}
+MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "https://vipfapwm3x.us-east-1.awsapprunner.com")
 
 # =============================================================================
 # COMPANY CONFIGURATION - UPDATE FOR ACTUAL COMPANY
 # =============================================================================
 
-COMPANY_NAME = "NimbusFlow"  # <-- CHANGE THIS
+COMPANY_NAME = "TechStore Pro"  # Computer products company (monitors, printers, etc.)
 
-SYSTEM_PROMPT = f"""You are a helpful, friendly customer support agent for {COMPANY_NAME}.
+SYSTEM_PROMPT = f"""You are a helpful, friendly customer support agent for {COMPANY_NAME}, a company that sells computer products including monitors, printers, and related accessories.
 
 Your role is to:
-1. Answer customer questions accurately using the company knowledge base
-2. Look up specific pricing, features, and product information when needed
-3. Be empathetic and professional in all interactions
-4. Admit when you don't know something rather than making up information
-5. Suggest contacting human support for complex issues you cannot resolve
+1. Help customers find the right products (monitors, printers, etc.) for their needs
+2. Answer questions about product specifications, pricing, and availability
+3. Assist with order inquiries and product recommendations
+4. Provide product recommendations based on customer needs (e.g., company size, use case, budget)
+5. Be empathetic and professional in all interactions
+6. Admit when you don't know something rather than making up information
+7. Suggest contacting human support for complex issues you cannot resolve
+8. Use the customer's name naturally when provided to personalize interactions
+
+IMPORTANT: When customers ask for recommendations (e.g., "which printer for a small company"), you MUST:
+- Use list_products or search_products to find relevant products
+- Review the product information (price, features, stock)
+- Make recommendations based on the customer's stated needs
+- Explain why you're recommending specific products
+
+IMPORTANT: When a customer introduces themselves, respond warmly but DO NOT repeat their name multiple times. Use their name naturally once in your greeting.
 
 Guidelines:
 - Keep responses concise but complete
-- Use bullet points for lists of features or steps
+- Use bullet points for product features or specifications
 - Always be polite and helpful
 - If a question is outside your knowledge, say so clearly
-- For billing or account-specific issues, direct to support@{COMPANY_NAME.lower()}.io
+- For order-specific or account issues, direct to support@{COMPANY_NAME.lower().replace(' ', '')}.com
+- When a customer introduces themselves or just greets you, respond warmly and ask how you can help
+- Ensure answers directly address the question asked
+- Provide accurate information based on tool results only
+- If you cannot answer with available tools, politely explain the limitation
+- Greetings and introductions are welcome - respond warmly and invite questions
 
-Remember: You have access to tools to look up pricing and feature information. Use them when customers ask about specific plans, prices, or feature availability.
+Answer Quality Standards:
+- Answers must directly address the question
+- Answers must be helpful and informative
+- Answers must be polite and professional
+- Answers must not make up information
+- Answers should use tool results when available
+
+Remember: You have access to tools via the MCP server to look up product information, check orders, and get product details. Use them when customers ask about products, orders, or specifications.
 """
 
 # =============================================================================
@@ -73,23 +70,14 @@ Remember: You have access to tools to look up pricing and feature information. U
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
-
-# =============================================================================
-# RAG CONFIGURATION
-# =============================================================================
-
-CHUNK_SIZE = 500
-CHUNK_OVERLAP = 50
-TOP_K_RESULTS = 5
-CHROMA_PERSIST_DIR = BASE_DIR / "chroma_db"
 
 # =============================================================================
 # API CONFIGURATION
 # =============================================================================
 
 API_HOST = os.getenv("API_HOST", "0.0.0.0")
-API_PORT = int(os.getenv("API_PORT", "8000"))
+# Cloud Run sets PORT, fallback to API_PORT or default to 8000
+API_PORT = int(os.getenv("PORT", os.getenv("API_PORT", "8000")))
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:8000").split(",")
 
 # =============================================================================

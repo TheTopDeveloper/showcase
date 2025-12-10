@@ -4,10 +4,9 @@ import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
-// UPDATE FOR ACTUAL COMPANY
 export const metadata: Metadata = {
-  title: 'NimbusFlow Support | AI Customer Assistant',
-  description: 'Get instant help with your NimbusFlow questions',
+  title: 'TechStore Pro Support | AI Customer Assistant',
+  description: 'Get instant help with computer products, orders, and product recommendations',
 }
 
 export default function RootLayout({

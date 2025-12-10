@@ -15,26 +15,27 @@ from pydantic import BaseModel, Field
 
 from app.config import API_HOST, API_PORT, CORS_ORIGINS, COMPANY_NAME
 from app.agents.customer_agent import get_agent, clear_session
-from app.rag.vector_store import get_vector_store
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Initialize resources on startup."""
     print("🚀 Starting Customer Support Agent API...")
-    print("📚 Initializing RAG vector store...")
+    print("🔌 Initializing MCP server connection...")
     try:
-        get_vector_store()
-        print("✅ Vector store ready")
+        from app.mcp_client import get_mcp_client
+        mcp_client = get_mcp_client()
+        tools = mcp_client.list_tools()
+        print(f"✅ MCP server connected - {len(tools)} tools available")
     except Exception as e:
-        print(f"⚠️ Vector store initialization failed: {e}")
+        print(f"⚠️ MCP server initialization failed: {e}")
     yield
     print("👋 Shutting down...")
 
 
 app = FastAPI(
     title=f"{COMPANY_NAME} Customer Support Agent",
-    description="AI-powered customer support chatbot with RAG and tool capabilities",
+    description="AI-powered customer support chatbot using MCP server",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -59,6 +60,7 @@ class ChatResponse(BaseModel):
     session_id: str
     sources_used: list[str] = []
     tools_called: list[str] = []
+    regenerations: int = 0
     timestamp: datetime = Field(default_factory=datetime.now)
 
 
@@ -79,16 +81,18 @@ class SessionResponse(BaseModel):
 async def root():
     """Root endpoint - health check."""
     try:
-        vs = get_vector_store()
-        vs_ready = vs.vector_store is not None
+        from app.mcp_client import get_mcp_client
+        mcp_client = get_mcp_client()
+        tools = mcp_client.list_tools()
+        mcp_ready = len(tools) > 0
     except:
-        vs_ready = False
+        mcp_ready = False
 
     return HealthResponse(
         status="healthy",
         company=COMPANY_NAME,
         timestamp=datetime.now(),
-        vector_store_ready=vs_ready,
+        vector_store_ready=mcp_ready,  # Reusing field for MCP readiness
     )
 
 
@@ -96,16 +100,18 @@ async def root():
 async def health_check():
     """Detailed health check endpoint."""
     try:
-        vs = get_vector_store()
-        vs_ready = vs.vector_store is not None
+        from app.mcp_client import get_mcp_client
+        mcp_client = get_mcp_client()
+        tools = mcp_client.list_tools()
+        mcp_ready = len(tools) > 0
     except:
-        vs_ready = False
+        mcp_ready = False
 
     return HealthResponse(
         status="healthy",
         company=COMPANY_NAME,
         timestamp=datetime.now(),
-        vector_store_ready=vs_ready,
+        vector_store_ready=mcp_ready,  # Reusing field for MCP readiness
     )
 
 
@@ -123,6 +129,7 @@ async def chat(request: ChatRequest):
             session_id=session_id,
             sources_used=result.sources_used,
             tools_called=result.tools_called,
+            regenerations=result.regenerations,
             timestamp=datetime.now(),
         )
     except Exception as e:
@@ -150,32 +157,21 @@ async def get_history(session_id: str):
     return {"session_id": session_id, "history": agent.get_conversation_history()}
 
 
-@app.post("/admin/rebuild-index")
-async def rebuild_index():
-    """Force rebuild of the vector store index."""
+@app.get("/admin/mcp-tools")
+async def list_mcp_tools():
+    """List available MCP tools."""
     try:
-        vs = get_vector_store()
-        vs.initialize(force_rebuild=True)
-        return {"status": "success", "message": "Vector store rebuilt"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.get("/admin/search-test")
-async def search_test(query: str):
-    """Test RAG search functionality."""
-    try:
-        vs = get_vector_store()
-        results = vs.search_with_scores(query, k=3)
+        from app.mcp_client import get_mcp_client
+        mcp_client = get_mcp_client()
+        tools = mcp_client.list_tools()
         return {
-            "query": query,
-            "results": [
+            "status": "success",
+            "tools": [
                 {
-                    "content": doc.page_content[:200] + "...",
-                    "source": doc.metadata.get("source_file", "Unknown"),
-                    "score": score
+                    "name": tool["name"],
+                    "description": tool.get("description", ""),
                 }
-                for doc, score in results
+                for tool in tools
             ]
         }
     except Exception as e:

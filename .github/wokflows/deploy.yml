@@ -1,0 +1,101 @@
+# =============================================================================
+# GitHub Actions - CI/CD Pipeline for GCP Cloud Run
+# =============================================================================
+# Copy this file to: .github/workflows/deploy.yml
+#
+# Required GitHub Secrets:
+# - GCP_PROJECT_ID: Your GCP project ID
+# - GCP_SA_KEY: Service account JSON key
+# - OPENAI_API_KEY: OpenAI API key
+# =============================================================================
+
+name: Deploy to GCP Cloud Run
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  GCP_REGION: us-central1
+  BACKEND_SERVICE: support-agent-api
+  FRONTEND_SERVICE: support-agent-ui
+
+jobs:
+  deploy-backend:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    outputs:
+      backend_url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - run: gcloud auth configure-docker
+
+      - name: Build and push backend
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.BACKEND_SERVICE }}:${{ github.sha }} ./backend
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.BACKEND_SERVICE }}:${{ github.sha }}
+
+      - name: Deploy backend
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.BACKEND_SERVICE }}
+          region: ${{ env.GCP_REGION }}
+          image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.BACKEND_SERVICE }}:${{ github.sha }}
+          flags: --memory=1Gi --cpu=1 --allow-unauthenticated
+          env_vars: |
+            OPENAI_MODEL=gpt-4o-mini
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+
+  deploy-frontend:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+    needs: deploy-backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - run: gcloud auth configure-docker
+
+      - name: Build and push frontend
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_API_URL=${{ needs.deploy-backend.outputs.backend_url }} \
+            -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.FRONTEND_SERVICE }}:${{ github.sha }} \
+            ./frontend
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.FRONTEND_SERVICE }}:${{ github.sha }}
+
+      - name: Deploy frontend
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.FRONTEND_SERVICE }}
+          region: ${{ env.GCP_REGION }}
+          image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.FRONTEND_SERVICE }}:${{ github.sha }}
+          flags: --memory=512Mi --allow-unauthenticated
+          env_vars: NEXT_PUBLIC_API_URL=${{ needs.deploy-backend.outputs.backend_url }}
+
+  health-check:
+    name: Health Check
+    runs-on: ubuntu-latest
+    needs: [deploy-backend, deploy-frontend]
+    steps:
+      - run: curl -f ${{ needs.deploy-backend.outputs.backend_url }}/health

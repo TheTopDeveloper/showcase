@@ -12,7 +12,6 @@ from typing import List, Optional
 
 from langchain_community.document_loaders import (
     TextLoader,
-    UnstructuredMarkdownLoader,
     PyPDFLoader,
 )
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -53,14 +52,12 @@ class RAGVectorStore:
         """Get appropriate loader based on file extension."""
         suffix = file_path.suffix.lower()
 
-        if suffix == ".md":
-            return UnstructuredMarkdownLoader(str(file_path))
-        elif suffix == ".pdf":
+        if suffix == ".pdf":
             return PyPDFLoader(str(file_path))
-        elif suffix in [".txt", ".text"]:
-            return TextLoader(str(file_path))
         else:
-            return TextLoader(str(file_path))
+            # Use TextLoader for .md, .txt, and other text files
+            # TextLoader handles markdown files perfectly fine for RAG
+            return TextLoader(str(file_path), encoding='utf-8')
 
     def _compute_docs_hash(self) -> str:
         """Compute hash of all document contents to detect changes."""

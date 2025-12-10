@@ -1,0 +1,11 @@
+﻿steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: 
+    - 'build'
+    - '--build-arg'
+    - 'NEXT_PUBLIC_API_URL=https://support-agent-api-eulx4rfnwq-uc.a.run.app'
+    - '-t'
+    - 'gcr.io/showcase-joshua/support-agent-ui'
+    - '.'
+images:
+- 'gcr.io/showcase-joshua/support-agent-ui'

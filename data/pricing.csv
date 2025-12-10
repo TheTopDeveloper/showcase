@@ -1,6 +1,0 @@
-plan_name,monthly_price_usd,annual_price_usd,annual_monthly_equivalent,max_users,storage_gb,projects_limit,custom_fields,time_tracking,api_access,priority_support,sso,audit_logs,dedicated_csm
-Free,0,0,0,5,1,3,No,No,No,No,No,No,No
-Starter,12,120,10,10,10,15,No,No,Basic,No,No,No,No
-Professional,29,290,24,50,100,Unlimited,Yes,No,Full,Email + Chat,No,No,No
-Business,59,590,49,200,500,Unlimited,Yes,Yes,Full,Email + Chat + Phone,Yes,Yes,No
-Enterprise,Custom,Custom,Custom,Unlimited,Unlimited,Unlimited,Yes,Yes,Full,24/7 Dedicated,Yes,Yes,Yes

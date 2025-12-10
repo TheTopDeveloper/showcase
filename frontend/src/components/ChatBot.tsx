@@ -5,15 +5,14 @@ import { Send, Bot, User, Loader2, RefreshCw, Sparkles, AlertCircle } from 'luci
 import ReactMarkdown from 'react-markdown';
 import { sendMessage, clearSession, Message } from '@/lib/api';
 
-// UPDATE THESE FOR ACTUAL COMPANY
-const COMPANY_NAME = 'NimbusFlow';
+const COMPANY_NAME = 'TechStore Pro';
 const WELCOME_MESSAGE = `Hi! 👋 I'm the ${COMPANY_NAME} support assistant. I can help you with:
 
-• **Pricing & Plans** - Compare options and find the right plan
-• **Features** - Learn what's available on each tier
-• **Troubleshooting** - Solve common issues quickly
-• **Account & Billing** - Manage your subscription
-• **General Questions** - Policies, security, and more
+• **Product Search** - Find monitors, printers, and computer accessories
+• **Product Details** - Get specifications, pricing, and availability
+• **Order Management** - Check order status and place new orders
+• **Customer Support** - Answer questions about products and orders
+• **Product Recommendations** - Find the right products for your needs
 
 How can I help you today?`;
 
@@ -97,81 +96,81 @@ export default function ChatBot() {
   };
 
   const suggestions = [
-    "What plans do you offer?",
-    "How do I reset my password?",
-    "Compare Professional vs Business",
-    "Do you have a mobile app?",
+    "What monitors do you have?",
+    "Show me printers under $300",
+    "I need a 4K monitor",
+    "Check my order status",
   ];
 
   return (
-    <div className="flex flex-col h-screen max-h-screen bg-slate-50">
+    <div className="flex flex-col h-full bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
-            <Bot className="w-6 h-6 text-white" />
+      <header className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-4 py-3 flex items-center justify-between shadow-lg">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30">
+            <Bot className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="font-semibold text-slate-900">{COMPANY_NAME} Support</h1>
-            <p className="text-xs text-slate-500">AI-powered assistant</p>
+            <h1 className="font-semibold text-white text-sm">{COMPANY_NAME} Support</h1>
+            <p className="text-xs text-blue-100">AI-powered assistant</p>
           </div>
         </div>
-        <button onClick={handleClearChat} className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg" title="Clear conversation">
-          <RefreshCw className="w-5 h-5" />
+        <button onClick={handleClearChat} className="p-1.5 text-white/80 hover:text-white hover:bg-white/20 rounded-lg transition-colors" title="Clear conversation">
+          <RefreshCw className="w-4 h-4" />
         </button>
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto chat-scroll p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto chat-scroll p-3 md:p-4 space-y-3 bg-gradient-to-b from-slate-50 to-white">
         {messages.map((message) => (
-          <div key={message.id} className={`flex gap-3 message-enter ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <div key={message.id} className={`flex gap-2.5 message-enter ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             {message.role === 'assistant' && (
-              <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
-                <Bot className="w-5 h-5 text-white" />
+              <div className="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center shadow-sm">
+                <Bot className="w-4 h-4 text-white" />
               </div>
             )}
-            <div className={`max-w-[75%] rounded-2xl px-4 py-3 ${message.role === 'user' ? 'bg-primary-600 text-white' : 'bg-white border border-slate-200 shadow-sm'}`}>
+            <div className={`max-w-[80%] rounded-xl px-3 py-2 text-sm ${message.role === 'user' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md' : 'bg-white border border-slate-200 shadow-sm'}`}>
               {message.role === 'assistant' ? (
-                <div className="prose-chat"><ReactMarkdown>{message.content}</ReactMarkdown></div>
+                <div className="prose-chat text-sm"><ReactMarkdown>{message.content}</ReactMarkdown></div>
               ) : (
-                <p className="whitespace-pre-wrap">{message.content}</p>
+                <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
               )}
               {message.sources && message.sources.length > 0 && (
-                <div className="mt-2 pt-2 border-t border-slate-100 flex flex-wrap gap-1">
+                <div className="mt-1.5 pt-1.5 border-t border-slate-100 flex flex-wrap gap-1">
                   {message.sources.map((source, i) => (
-                    <span key={i} className="inline-flex items-center gap-1 text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
-                      <Sparkles className="w-3 h-3" />{source}
+                    <span key={i} className="inline-flex items-center gap-1 text-xs bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200">
+                      <Sparkles className="w-2.5 h-2.5" />{source}
                     </span>
                   ))}
                 </div>
               )}
             </div>
             {message.role === 'user' && (
-              <div className="flex-shrink-0 w-8 h-8 bg-slate-600 rounded-lg flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
+              <div className="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center shadow-sm">
+                <User className="w-4 h-4 text-white" />
               </div>
             )}
           </div>
         ))}
 
         {isLoading && (
-          <div className="flex gap-3 justify-start message-enter">
-            <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
-              <Bot className="w-5 h-5 text-white" />
+          <div className="flex gap-2.5 justify-start message-enter">
+            <div className="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center shadow-sm">
+              <Bot className="w-4 h-4 text-white" />
             </div>
-            <div className="bg-white border border-slate-200 shadow-sm rounded-2xl px-4 py-3">
+            <div className="bg-white border border-slate-200 shadow-sm rounded-xl px-3 py-2">
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-slate-400 rounded-full typing-dot" />
-                <div className="w-2 h-2 bg-slate-400 rounded-full typing-dot" />
-                <div className="w-2 h-2 bg-slate-400 rounded-full typing-dot" />
+                <div className="w-1.5 h-1.5 bg-blue-400 rounded-full typing-dot" />
+                <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full typing-dot" />
+                <div className="w-1.5 h-1.5 bg-purple-400 rounded-full typing-dot" />
               </div>
             </div>
           </div>
         )}
 
         {error && (
-          <div className="flex items-center gap-2 text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3 message-enter">
-            <AlertCircle className="w-5 h-5 flex-shrink-0" /><p className="text-sm">{error}</p>
+          <div className="flex items-center gap-2 text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 message-enter text-sm">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" /><p>{error}</p>
           </div>
         )}
         <div ref={messagesEndRef} />
@@ -179,11 +178,11 @@ export default function ChatBot() {
 
       {/* Suggestions */}
       {messages.length === 1 && (
-        <div className="px-4 pb-2">
-          <p className="text-xs text-slate-500 mb-2">Try asking:</p>
-          <div className="flex flex-wrap gap-2">
+        <div className="px-3 md:px-4 pb-2">
+          <p className="text-xs text-slate-500 mb-1.5 font-medium">Try asking:</p>
+          <div className="flex flex-wrap gap-1.5">
             {suggestions.map((suggestion, i) => (
-              <button key={i} onClick={() => setInput(suggestion)} className="text-sm bg-white border border-slate-200 hover:border-primary-300 hover:bg-primary-50 px-3 py-1.5 rounded-full transition-colors">
+              <button key={i} onClick={() => setInput(suggestion)} className="text-xs bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 hover:border-blue-400 hover:from-blue-100 hover:to-indigo-100 text-blue-700 px-2.5 py-1 rounded-full transition-all shadow-sm">
                 {suggestion}
               </button>
             ))}
@@ -192,8 +191,8 @@ export default function ChatBot() {
       )}
 
       {/* Input */}
-      <div className="border-t border-slate-200 bg-white p-4">
-        <form onSubmit={handleSubmit} className="flex gap-3">
+      <div className="border-t border-slate-200 bg-gradient-to-r from-white to-slate-50 p-3 md:p-4">
+        <form onSubmit={handleSubmit} className="flex gap-2">
           <textarea
             ref={inputRef}
             value={input}
@@ -201,14 +200,14 @@ export default function ChatBot() {
             onKeyDown={handleKeyDown}
             placeholder="Type your question..."
             rows={1}
-            className="flex-1 resize-none rounded-xl border border-slate-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 px-4 py-3 outline-none"
+            className="flex-1 resize-none rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 px-3 py-2 text-sm outline-none transition-all"
             disabled={isLoading}
           />
-          <button type="submit" disabled={!input.trim() || isLoading} className="w-12 h-12 bg-primary-600 hover:bg-primary-700 disabled:bg-slate-300 text-white rounded-xl flex items-center justify-center">
-            {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+          <button type="submit" disabled={!input.trim() || isLoading} className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-300 disabled:to-slate-400 text-white rounded-lg flex items-center justify-center shadow-md transition-all disabled:shadow-none">
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           </button>
         </form>
-        <p className="text-xs text-slate-400 mt-2 text-center">Press Enter to send • Shift+Enter for new line</p>
+        <p className="text-xs text-slate-400 mt-1.5 text-center">Press Enter to send • Shift+Enter for new line</p>
       </div>
     </div>
   );
